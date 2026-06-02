@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Créer un compte - DramaGasy Live</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#000;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+padding:20px;
+}
+
+.container{
+width:100%;
+max-width:500px;
+background:#111;
+padding:30px;
+border-radius:20px;
+box-shadow:0 0 20px rgba(229,9,20,.2);
+}
+
+.logo{
+width:180px;
+display:block;
+margin:auto;
+margin-bottom:20px;
+}
+
+h1{
+text-align:center;
+margin-bottom:10px;
+color:#e50914;
+}
+
+.subtitle{
+text-align:center;
+color:#ccc;
+margin-bottom:25px;
+}
+
+input{
+width:100%;
+padding:15px;
+margin-bottom:15px;
+border:none;
+border-radius:10px;
+background:#222;
+color:white;
+font-size:16px;
+}
+
+button{
+width:100%;
+padding:15px;
+background:#e50914;
+color:white;
+border:none;
+border-radius:10px;
+font-size:18px;
+font-weight:bold;
+cursor:pointer;
+}
+
+button:hover{
+opacity:.9;
+}
+
+.message{
+margin-top:15px;
+text-align:center;
+font-weight:bold;
+}
+
+.success{
+color:#00d26a;
+}
+
+.error{
+color:#ff4d4d;
+}
+
+.link{
+display:block;
+text-align:center;
+margin-top:15px;
+color:#ff4444;
+text-decoration:none;
+font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<a href="index.html">
+<img src="logo.png" class="logo">
+</a>
+
+<h1>Créer un compte</h1>
+
+<div class="subtitle">
+Rejoignez DramaGasy Live
+</div>
+
+<input
+type="text"
+id="nom"
+placeholder="Nom complet">
+
+<input
+type="tel"
+id="telephone"
+placeholder="Téléphone">
+
+<input
+type="password"
+id="motdepasse"
+placeholder="Mot de passe">
+
+<input
+type="password"
+id="confirmation"
+placeholder="Confirmer le mot de passe">
+
+<button onclick="inscription()">
+📝 CRÉER MON COMPTE
+</button>
+
+<div id="message" class="message"></div>
+
+<a href="login.html" class="link">
+🔑 J'ai déjà un compte
+</a>
+
+<a href="index.html" class="link">
+🏠 Retour à l'accueil
+</a>
+
+</div>
+
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbwlIGCXP8487ohPDZXP_BxPRKrQK9IwQoJLW9PXmPJbJ8B21b-9oxBZpKpj6Qv6qpE-/exec";
+
+async function inscription(){
+
+const nom =
+document.getElementById("nom").value.trim();
+
+const telephone =
+document.getElementById("telephone").value.trim();
+
+const motdepasse =
+document.getElementById("motdepasse").value.trim();
+
+const confirmation =
+document.getElementById("confirmation").value.trim();
+
+const message =
+document.getElementById("message");
+
+message.innerHTML="";
+
+if(
+!nom ||
+!telephone ||
+!motdepasse ||
+!confirmation
+){
+
+message.className="message error";
+message.innerHTML=
+"Veuillez remplir tous les champs.";
+return;
+
+}
+
+if(motdepasse !== confirmation){
+
+message.className="message error";
+message.innerHTML=
+"Les mots de passe ne correspondent pas.";
+return;
+
+}
+
+if(motdepasse.length < 4){
+
+message.className="message error";
+message.innerHTML=
+"Le mot de passe doit contenir au moins 4 caractères.";
+return;
+
+}
+
+try{
+
+const rep = await fetch(API_URL,{
+method:"POST",
+body:JSON.stringify({
+action:"register",
+nom:nom,
+telephone:telephone,
+motdepasse:motdepasse
+})
+});
+
+const data = await rep.json();
+
+if(data.success){
+
+localStorage.setItem(
+"userId",
+data.userId
+);
+
+localStorage.setItem(
+"nom",
+nom
+);
+
+localStorage.setItem(
+"telephone",
+telephone
+);
+
+localStorage.setItem(
+"solde",
+0
+);
+
+message.className="message success";
+message.innerHTML=
+"✅ Compte créé avec succès";
+
+setTimeout(function(){
+
+window.location=
+"dashboard.html";
+
+},1500);
+
+}else{
+
+message.className="message error";
+message.innerHTML=
+data.message;
+
+}
+
+}catch(err){
+
+message.className="message error";
+message.innerHTML=
+"Erreur serveur.";
+
+}
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Episodes - DramaGasy Live</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#000;
+color:#fff;
+}
+
+.header{
+background:#111;
+padding:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.logo{
+height:60px;
+}
+
+.panier{
+position:relative;
+font-size:30px;
+cursor:pointer;
+}
+
+.badge{
+position:absolute;
+top:-8px;
+right:-10px;
+background:red;
+color:white;
+border-radius:50%;
+padding:3px 8px;
+font-size:12px;
+font-weight:bold;
+}
+
+.titre-page{
+text-align:center;
+font-size:30px;
+font-weight:bold;
+color:#d60000;
+margin:20px 0;
+}
+
+.container{
+max-width:1000px;
+margin:auto;
+padding:15px;
+}
+
+.episode{
+background:#111;
+border-radius:15px;
+padding:15px;
+margin-bottom:20px;
+box-shadow:0 0 10px rgba(255,255,255,.1);
+}
+
+.numero{
+color:#ffcc00;
+font-size:18px;
+font-weight:bold;
+}
+
+.nom{
+font-size:24px;
+font-weight:bold;
+margin:10px 0;
+}
+
+.description{
+color:#ccc;
+margin:10px 0;
+}
+
+.info{
+color:#aaa;
+margin-bottom:10px;
+}
+
+.prix{
+font-size:20px;
+font-weight:bold;
+color:#00ff66;
+margin:10px 0;
+}
+
+.btn{
+width:100%;
+padding:15px;
+border:none;
+border-radius:10px;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+background:#d60000;
+color:white;
+}
+
+.loader{
+text-align:center;
+padding:50px;
+font-size:20px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="header">
+
+<img src="logo.png" class="logo">
+
+<div class="panier"
+onclick="location.href='achats.html'">
+
+ðŸ›’
+
+<span id="badge" class="badge">
+0
+</span>
+
+</div>
+
+</div>
+
+<div class="titre-page">
+NOS EPISODES
+</div>
+
+<div id="episodes" class="container">
+
+<div class="loader">
+Chargement...
+</div>
+
+</div>
+
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbwlIGCXP8487ohPDZXP_BxPRKrQK9IwQoJLW9PXmPJbJ8B21b-9oxBZpKpj6Qv6qpE-/exec";
+
+const serieId =
+localStorage.getItem("serieId");
+alert("Serie = " + serieId);
+
+const userId =
+localStorage.getItem("userId");
+
+chargerEpisodes();
+chargerPanier();
+
+async function chargerEpisodes(){
+
+if(!serieId){
+
+document.getElementById("episodes").innerHTML=
+"<div class='loader'>Série introuvable</div>";
+
+return;
+
+}
+
+try{
+
+const repAchats = await fetch(API_URL,{
+method:"POST",
+body:JSON.stringify({
+action:"getAchats",
+userId:userId
+})
+});
+
+const achatsData =
+await repAchats.json();
+
+const achats =
+achatsData.achats || [];
+
+const saisonAchetee =
+achats.some(a =>
+
+a.type === "SAISON" &&
+String(a.serieId) === String(serieId)
+
+);
+
+const response =
+await fetch(API_URL,{
+method:"POST",
+body:JSON.stringify({
+action:"getEpisodes",
+serieId:serieId
+})
+});
+
+const data =
+await response.json();
+
+if(!data.success){
+
+document.getElementById("episodes").innerHTML=
+"<div class='loader'>Erreur API</div>";
+
+return;
+
+}
+
+let html="";
+
+data.episodes.forEach(ep=>{
+
+const episodeAchete =
+achats.some(a =>
+
+a.type === "EPISODE" &&
+String(a.episodeId) === String(ep.id)
+
+);
+
+const autorise =
+saisonAchetee ||
+episodeAchete ||
+ep.gratuit === "OUI";
+
+html+=`
+
+<div class="episode">
+
+<div class="numero">
+Episode ${ep.numero}
+</div>
+
+<div class="nom">
+${ep.titre}
+</div>
+
+<div class="description">
+${ep.description}
+</div>
+
+<div class="info">
+Durée : ${ep.duree}
+</div>
+
+<div class="prix">
+${ep.gratuit=="OUI"
+? "GRATUIT"
+: ep.prix+" Ar"}
+</div>
+
+<button
+class="btn"
+onclick="${
+autorise
+? `ouvrirEpisode('${ep.id}')`
+: `acheterEpisode('${ep.id}',${ep.prix})`
+}">
+${
+autorise
+? " REGARDER"
+: " ACHETER"
+}
+</button>
+
+</div>
+
+`;
+
+});
+
+if(html==""){
+
+html=
+"<div class='loader'>Aucun episode disponible</div>";
+
+}
+
+document.getElementById("episodes").innerHTML=
+html;
+
+}catch(e){
+
+document.getElementById("episodes").innerHTML=
+"<div class='loader'>Erreur de chargement</div>";
+
+}
+
+}
+
+function ouvrirEpisode(id){
+
+localStorage.setItem(
+"episodeId",
+id
+);
+
+window.location=
+"player.html";
+
+}
+async function acheterEpisode(id,prix){
+
+if(!confirm(
+"Confirmer l'achat de cet épisode pour "
++ prix +
+" Ar ?"
+)){
+return;
+}
+
+try{
+
+const rep = await fetch(API_URL,{
+method:"POST",
+body:JSON.stringify({
+
+action:"acheter",
+userId:userId,
+serieId:serieId,
+episodeId:id,
+prix:prix
+
+})
+});
+
+const data =
+await rep.json();
+
+if(data.success){
+
+localStorage.setItem(
+"solde",
+data.nouveauSolde
+);
+
+alert(
+"Episode acheté avec succès"
+);
+
+location.reload();
+
+}else{
+
+alert(
+data.message
+);
+
+}
+
+}catch(e){
+
+alert(
+"Erreur : " + e
+);
+
+}
+
+}
+
+async function chargerPanier(){
+
+try{
+
+const rep =
+await fetch(API_URL,{
+method:"POST",
+body:JSON.stringify({
+action:"getAchats",
+userId:userId
+})
+});
+
+const data =
+await rep.json();
+
+if(data.success){
+
+document.getElementById("badge").innerHTML=
+data.achats.length;
+
+}
+
+}catch(e){}
+
+}
+
+</script>
+
+</body>
+</html>

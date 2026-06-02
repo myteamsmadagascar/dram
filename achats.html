@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Mes Achats - DramaGasy Live</title>
+
+<style>
+
+body{
+margin:0;
+background:#000;
+font-family:Arial,sans-serif;
+color:white;
+}
+
+.container{
+max-width:600px;
+margin:auto;
+padding:20px;
+}
+
+h1{
+text-align:center;
+color:#d60000;
+}
+
+.achat{
+background:#111;
+padding:15px;
+border-radius:12px;
+margin-bottom:15px;
+}
+
+.btn{
+display:block;
+width:100%;
+padding:15px;
+margin-top:20px;
+background:#d60000;
+color:white;
+text-decoration:none;
+text-align:center;
+border-radius:10px;
+font-weight:bold;
+box-sizing:border-box;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🛒 Mes Achats</h1>
+
+<div id="listeAchats">
+
+Chargement...
+
+</div>
+
+<a href="dashboard.html" class="btn">
+⬅ Retour Dashboard
+</a>
+
+</div>
+
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbwlIGCXP8487ohPDZXP_BxPRKrQK9IwQoJLW9PXmPJbJ8B21b-9oxBZpKpj6Qv6qpE-/exec";
+
+const userId =
+localStorage.getItem("userId");
+
+chargerAchats();
+
+async function chargerAchats(){
+
+try{
+
+const rep = await fetch(API_URL,{
+method:"POST",
+body:JSON.stringify({
+action:"getAchats",
+userId:userId
+})
+});
+
+const data = await rep.json();
+
+if(!data.success){
+
+document.getElementById("listeAchats").innerHTML =
+"Aucun achat.";
+
+return;
+
+}
+
+let html = "";
+
+data.achats.forEach(a=>{
+
+html += `
+<div class="achat">
+
+<b>Série :</b> ${a.serieId}<br><br>
+
+<b>Episode :</b> ${a.episodeId}<br><br>
+
+<b>Prix :</b> ${a.prix} Ar<br><br>
+
+<b>Date :</b> ${a.date}
+
+</div>
+`;
+
+});
+
+document.getElementById("listeAchats").innerHTML =
+html;
+
+}catch(err){
+
+document.getElementById("listeAchats").innerHTML =
+"Erreur de chargement";
+
+}
+
+}
+
+</script>
+
+</body>
+</html>

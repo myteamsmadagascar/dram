@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Historique Recharges</title>
+</head>
+<body>
+
+<h2>Historique des recharges</h2>
+
+<div id="liste">
+Chargement...
+</div>
+
+<script>
+
+const API_URL="VOTRE_URL_APPS_SCRIPT";
+
+charger();
+
+async function charger(){
+
+const rep=await fetch(API_URL,{
+method:"POST",
+body:JSON.stringify({
+action:"getRecharges",
+userId:localStorage.getItem("userId")
+})
+});
+
+const data=await rep.json();
+
+let html="";
+
+data.recharges.forEach(r=>{
+
+html += `
+<hr>
+Montant : ${r.montant} Ar<br>
+Mode : ${r.mode}<br>
+Référence : ${r.reference}<br>
+Date : ${r.date}<br>
+Statut : ${r.statut}<br>
+`;
+
+});
+
+document.getElementById("liste").innerHTML = html;
+
+}
+
+</script>
+
+</body>
+</html>

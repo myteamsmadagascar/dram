@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>DramaGasy Live</title>
+
+<style>
+
+body{
+margin:0;
+background:#000;
+font-family:Arial,sans-serif;
+color:white;
+}
+
+.container{
+max-width:500px;
+margin:auto;
+padding:20px;
+}
+
+.logo{
+display:block;
+width:150px;
+margin:auto;
+}
+
+h1{
+text-align:center;
+color:#d60000;
+}
+
+.card{
+background:#111;
+padding:20px;
+border-radius:15px;
+margin-top:15px;
+}
+
+.solde{
+font-size:32px;
+font-weight:bold;
+color:#00ff66;
+text-align:center;
+}
+
+.btn{
+display:block;
+width:100%;
+padding:15px;
+margin-top:15px;
+background:#d60000;
+color:white;
+text-decoration:none;
+text-align:center;
+border-radius:10px;
+font-weight:bold;
+box-sizing:border-box;
+border:none;
+}
+
+.logout{
+background:#444;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<img src="logo.png" class="logo">
+
+<h1>DramaGasy Live</h1>
+
+<div class="card">
+
+<h2 id="nomUtilisateur">
+Bienvenue Utilisateur
+</h2>
+
+<p>ID :</p>
+<p id="userId"></p>
+
+</div>
+
+<div class="card">
+
+<h3> Solde disponible</h3>
+
+<div class="solde" id="solde">
+0 Ar
+</div>
+
+</div>
+
+<a href="recharge.html" class="btn">
+ RECHARGER MON COMPTE
+</a>
+
+<a href="series.html" class="btn">
+ MES SÉRIES
+</a>
+
+<a href="achats.html" class="btn">
+ MES ACHATS
+</a>
+
+<a href="#" class="btn logout" onclick="logout()">
+ DÉCONNEXION
+</a>
+
+</div>
+
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbwlIGCXP8487ohPDZXP_BxPRKrQK9IwQoJLW9PXmPJbJ8B21b-9oxBZpKpj6Qv6qpE-/exec";
+
+const userId = localStorage.getItem("userId");
+
+document.getElementById("userId").innerHTML =
+userId || "";
+
+async function chargerSolde(){
+
+try{
+
+const response = await fetch(API_URL,{
+method:"POST",
+headers:{
+"Content-Type":"text/plain"
+},
+body:JSON.stringify({
+action:"getUser",
+userId:userId
+})
+});
+
+const data = await response.json();
+
+console.log(data);
+
+if(data.success){
+
+document.getElementById("nomUtilisateur").innerHTML =
+"Bienvenue " + data.nom;
+
+document.getElementById("solde").innerHTML =
+data.solde + " Ar";
+
+}
+
+}catch(error){
+
+console.log(error);
+
+}
+
+}
+
+chargerSolde();
+
+function logout(){
+
+localStorage.clear();
+window.location="index.html";
+
+}
+
+</script>
+
+</body>
+</html>

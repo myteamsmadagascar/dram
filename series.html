@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Nos Séries - DramaGasy Live</title>
+
+<style>
+
+body{
+margin:0;
+background:#000;
+font-family:Arial,sans-serif;
+color:white;
+}
+
+.header{
+background:#111;
+padding:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.logo{
+height:60px;
+}
+
+.panier{
+position:relative;
+font-size:30px;
+cursor:pointer;
+}
+
+.badge{
+position:absolute;
+top:-8px;
+right:-10px;
+background:red;
+color:white;
+border-radius:50%;
+padding:3px 8px;
+font-size:12px;
+font-weight:bold;
+}
+
+.titre-page{
+text-align:center;
+font-size:32px;
+font-weight:bold;
+color:#d60000;
+margin:20px 0;
+}
+
+.solde{
+text-align:center;
+font-size:22px;
+color:#00ff66;
+font-weight:bold;
+margin-bottom:20px;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+padding:15px;
+}
+
+.serie{
+background:#111;
+border-radius:15px;
+overflow:hidden;
+margin-bottom:25px;
+box-shadow:0 0 15px rgba(255,0,0,.25);
+}
+
+.serie img{
+width:100%;
+display:block;
+}
+
+.content{
+padding:15px;
+}
+
+.titre{
+font-size:26px;
+font-weight:bold;
+margin-bottom:10px;
+}
+
+.description{
+color:#ccc;
+margin-bottom:10px;
+}
+
+.info{
+margin-bottom:8px;
+color:#00ff66;
+}
+
+.btn{
+display:block;
+width:100%;
+padding:15px;
+background:#d60000;
+color:white;
+text-decoration:none;
+text-align:center;
+border-radius:10px;
+font-weight:bold;
+margin-top:15px;
+box-sizing:border-box;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+<img src="logo.png" class="logo">
+
+<div class="panier"
+onclick="window.location='achats.html'">
+
+🛒
+
+<span class="badge" id="nbAchats">
+0
+</span>
+
+</div>
+
+</div>
+
+<div class="titre-page">
+🎬 Nos Séries
+</div>
+
+<div class="solde">
+💰 Solde :
+<span id="solde">0</span>
+Ar
+</div>
+
+<div class="container">
+
+<div id="series">
+Chargement...
+</div>
+
+</div>
+
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbwlIGCXP8487ohPDZXP_BxPRKrQK9IwQoJLW9PXmPJbJ8B21b-9oxBZpKpj6Qv6qpE-/exec";
+
+document.getElementById("solde").innerHTML =
+localStorage.getItem("solde") || "0";
+
+chargerSeries();
+chargerPanier();
+
+async function chargerSeries(){
+
+try{
+const userId =
+localStorage.getItem("userId");
+
+const repAchats = await fetch(API_URL,{
+method:"POST",
+body:JSON.stringify({
+action:"getAchats",
+userId:userId
+})
+});
+
+const achatsData =
+await repAchats.json();
+
+let achats = [];
+
+if(achatsData.success){
+achats = achatsData.achats;
+}
+
+const rep = await fetch(API_URL,{
+method:"POST",
+body:JSON.stringify({
+action:"getSeries"
+})
+});
+
+const data = await rep.json();
+
+if(data.success){
+
+let html="";
+
+data.series.forEach(serie=>{
+
+const saisonAchetee =
+achats.some(a =>
+String(a.serieId) === String(serie.id) &&
+(
+a.episodeId == null ||
+String(a.episodeId) === ""
+)
+);
+html += `
+
+<div class="serie">
+
+<img src="${serie.image}" alt="">
+
+<div class="content">
+
+<div class="titre">
+${serie.titre}
+</div>
+
+<div class="description">
+${serie.description}
+</div>
+
+<div class="info">
+🎬 ${serie.nbEpisodes} épisodes
+</div>
+
+<div class="info">
+💵 ${serie.prixEpisode} Ar / épisode
+</div>
+
+<div class="info">
+🎟️ ${serie.prixSaison} Ar / saison
+</div>
+
+${saisonAchetee ?
+
+`<div class="btn"
+style="background:#00aa44;">
+✅ SAISON ACHETÉE
+</div>`
+
+:
+
+`<button
+class="btn"
+onclick="acheterSaison(
+'${serie.id}',
+${serie.prixSaison}
+)">
+🎟️ ACHETER LA SAISON
+</button>`
+
+}
+
+<button
+class="btn"
+onclick="ouvrirSerie('${serie.id}')">
+VOIR LES ÉPISODES
+</button>
+
+
+</div>
+
+`;
+
+});
+
+document.getElementById("series").innerHTML =
+html;
+
+}else{
+
+document.getElementById("series").innerHTML =
+"Aucune série disponible";
+
+}
+
+}catch(err){
+
+document.getElementById("series").innerHTML =
+"Erreur de chargement";
+
+}
+
+}
+
+async function chargerPanier(){
+
+try{
+
+const rep = await fetch(API_URL,{
+method:"POST",
+body:JSON.stringify({
+action:"getAchats",
+userId:localStorage.getItem("userId")
+})
+});
+
+const data = await rep.json();
+
+if(data.success){
+
+document.getElementById("nbAchats").innerHTML =
+data.achats.length;
+
+}
+
+}catch(e){}
+
+}
+
+async function acheterSaison(
+serieId,
+prix
+){
+
+const userId =
+localStorage.getItem("userId");
+
+const rep = await fetch(API_URL,{
+method:"POST",
+body:JSON.stringify({
+
+action:"acheterSaison",
+userId:userId,
+serieId:serieId,
+prix:prix
+
+})
+});
+
+const data =
+await rep.json();
+
+if(data.success){
+
+localStorage.setItem(
+"solde",
+data.nouveauSolde
+);
+
+alert(
+"Saison achetée\nNouveau solde : "
++ data.nouveauSolde +
+" Ar"
+);
+
+location.reload();
+
+}else{
+
+alert(data.message);
+
+}
+
+}
+function ouvrirSerie(id){
+
+localStorage.setItem(
+"serieId",
+id
+);
+
+window.location =
+"episodes.html";
+
+
+}
+</script>
+
+</body>
+</html>

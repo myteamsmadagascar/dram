@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Mot de passe oublié - DramaGasy Live</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#000;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+padding:20px;
+}
+
+.box{
+width:100%;
+max-width:500px;
+background:#111;
+padding:30px;
+border-radius:20px;
+}
+
+.logo{
+width:180px;
+display:block;
+margin:auto;
+margin-bottom:20px;
+}
+
+h1{
+text-align:center;
+margin-bottom:10px;
+}
+
+.subtitle{
+text-align:center;
+color:#ccc;
+margin-bottom:25px;
+}
+
+input,
+textarea{
+width:100%;
+padding:15px;
+margin-top:10px;
+border:none;
+border-radius:10px;
+background:#222;
+color:white;
+font-size:16px;
+}
+
+textarea{
+height:140px;
+resize:none;
+}
+
+button{
+width:100%;
+padding:15px;
+margin-top:20px;
+background:#e50914;
+color:white;
+border:none;
+border-radius:10px;
+font-size:18px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.link{
+display:block;
+text-align:center;
+margin-top:15px;
+color:#ff4444;
+text-decoration:none;
+font-weight:bold;
+}
+
+.info{
+margin-top:20px;
+padding:15px;
+background:#1b1b1b;
+border-radius:10px;
+font-size:14px;
+line-height:1.7;
+color:#ccc;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<a href="index.html">
+<img src="logo.png" class="logo">
+</a>
+
+<h1>🔑 Mot de passe oublié</h1>
+
+<div class="subtitle">
+Remplissez le formulaire ci-dessous.
+</div>
+
+<form
+action="https://formsubmit.co/myteamsmadagascar@gmail.com"
+method="POST">
+
+<input
+type="hidden"
+name="_subject"
+value="Demande récupération mot de passe DramaGasy">
+
+<input
+type="hidden"
+name="_captcha"
+value="false">
+
+<input
+type="hidden"
+name="_next"
+value="merci.html">
+
+<input
+type="text"
+name="Nom"
+placeholder="Votre nom"
+required>
+
+<input
+type="tel"
+name="Téléphone"
+placeholder="Téléphone utilisé lors de l'inscription"
+required>
+
+<input
+type="email"
+name="Email"
+placeholder="Email (facultatif)">
+
+<textarea
+name="Message"
+placeholder="Précisez votre demande..."
+required></textarea>
+
+<button type="submit">
+
+📨 Envoyer la demande
+
+</button>
+
+</form>
+
+<div class="info">
+
+Notre service client vérifiera votre compte et vous contactera afin de vous aider à récupérer l'accès à votre espace.
+
+</div>
+
+<a href="login.html" class="link">
+🔑 Retour à la connexion
+</a>
+
+<a href="index.html" class="link">
+🏠 Retour à l'accueil
+</a>
+
+</div>
+
+</body>
+</html>
