@@ -7,7 +7,7 @@
 <title>Episodes - DramaGasy Live</title>
 
 <style>
-
+  
 *{
 margin:0;
 padding:0;
@@ -130,7 +130,7 @@ font-size:20px;
 <div class="panier"
 onclick="location.href='achats.html'">
 
-🛒
+ðŸ›’
 
 <span id="badge" class="badge">
 0
@@ -172,7 +172,7 @@ async function chargerEpisodes(){
 if(!serieId){
 
 document.getElementById("episodes").innerHTML=
-"<div class='loader'>S�rie introuvable</div>";
+"<div class='loader'>Série introuvable</div>";
 
 return;
 
@@ -257,7 +257,7 @@ ${ep.description}
 </div>
 
 <div class="info">
-Dur�e : ${ep.duree}
+Durée : ${ep.duree}
 </div>
 
 <div class="prix">
@@ -319,7 +319,7 @@ window.location=
 async function acheterEpisode(id,prix){
 
 if(!confirm(
-"Confirmer l'achat de cet �pisode pour "
+"Confirmer l'achat de cet épisode pour "
 + prix +
 " Ar ?"
 )){
@@ -352,7 +352,7 @@ data.nouveauSolde
 );
 
 alert(
-"Episode achet� avec succ�s"
+"Episode acheté avec succès"
 );
 
 location.reload();
